@@ -6,6 +6,13 @@
 		private $dessenha;
 		private $dtcadastro;
 
+		//Início: Método Construtor, o qual chama os métodos set para atribuir valores as propriedades dessas classe
+		public function __construct($login = "", $password = ""){
+			$this->setDesLogin($login);
+			$this->setDesSenha($password);
+		}
+		//Termino: Método Construtor, o qual chama os métodos set para atribuir valores as propriedades dessas classe
+
 		//Início: Métodos gets
 		public function getIdUsuario(){
 			return $this->idusuario;
@@ -42,6 +49,15 @@
 		}
 		//Termino: Métodos sets
 		
+		//Início: Método que insere valores nos atributos dessa classe
+		public function setData($data){
+				$this->setIdUsuario($data['idusuario']);
+				$this->setDesLogin($data['deslogin']);
+				$this->setDesSenha($data['dessenha']);
+				$this->setDtCadastro(new DateTime($data['dtcadastro']));			
+		}
+		//Termino: Método que insere valores nos atributos dessa classe
+
 		//Início: Método para procurar um objeto na base de dados pelo seu 'id'
 		public function loadById($id){
 
@@ -52,12 +68,9 @@
 			));
 
 			if (count($results) > 0){
-				$row = $results[0];
 
-				$this->setIdUsuario($row['idusuario']);
-				$this->setDesLogin($row['deslogin']);
-				$this->setDesSenha($row['dessenha']);
-				$this->setDtCadastro(new DateTime($row['dtcadastro']));
+				$this->setData($results[0]);
+
 			}
 
 
@@ -82,6 +95,7 @@
 		}
 		//Termino: Método estático que lista usuários/objetos/registro buscando pelo login
 
+		//Início: Método Login, o qual verifica se um usuário existe exatamente com as informações passadas
 		public function login($login, $password){
 			$sql = new Sql();
 
@@ -91,18 +105,52 @@
 			));
 
 			if (count($results) > 0){
-				$row = $results[0];
 
-				$this->setIdUsuario($row['idusuario']);
-				$this->setDesLogin($row['deslogin']);
-				$this->setDesSenha($row['dessenha']);
-				$this->setDtCadastro(new DateTime($row['dtcadastro']));
+				$this->setData($results[0]);
+
 			}else{
 
 				throw new Exception("Usuário não encontrado. Login e/ou senha inválidos");
 
 			}			
 		}
+		//Termino: Método Login, o qual verifica se um usuário existe exatamente com as informações passadas
+
+		//Início: Método que insere um novo registro/usuario/objeto no banco por uma procedure no mysql
+		public function insert(){
+			$sql = new Sql();
+
+			$results = $sql->select("CALL sp_usuarios_insert(:DESLOGIN, :DESSENHA)", array(
+				':DESLOGIN'=>$this->getDesLogin(),
+				':DESSENHA'=>$this->getDesSenha()
+			));
+
+			if (count($results) > 0){
+
+				$this->setData($results[0]);
+				
+			}
+		}
+		//Termino: Método que insere um novo registro/usuario/objeto no banco por uma procedure no mysql
+
+		//Início: Método Update, para atualizar os registros de um possível usuário
+		
+		public function update($login, $password){
+
+			$this->setDesLogin($login);
+			$this->setDesSenha($password);
+
+			$sql = new Sql();
+
+			$sql->query("UPDATE tb_usuarios SET deslogin = :DESLOGIN, dessenha = :DESSENHA WHERE idusuario = :ID", array(
+				':DESLOGIN'=>$this->getDesLogin(),
+				':DESSENHA'=>$this->getDesSenha(),
+				':ID'=>$this->getIdUsuario()
+			));
+
+		}
+
+		//Termino: Método Update, para atualizar os registros de um possível usuário
 
 		//Início: Método mágico '__toString'
 		public function __toString(){

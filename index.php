@@ -16,9 +16,21 @@ require_once("config.php");
 //$search = Usuario::search("ma");
 //echo json_encode($search)
 
-$login = new Usuario();
+//Faz Login
+//$login = new Usuario();
+//$login->login("Paulo", "1$%&3");
+//echo $login
 
-$login->login("Paulo", "1$%&3");
+//Executa um inserção no BD
+//$aluno = new Usuario("Sergio", "034876");
+//$aluno->insert();
+//echo $aluno;
 
-echo $login
+$usuario = new Usuario();
+
+$usuario->loadById(8);
+
+$usuario->update("Professor: Marcelo", "32489");
+
+echo $usuario;
 ?>
