@@ -134,7 +134,6 @@
 		//Termino: Método que insere um novo registro/usuario/objeto no banco por uma procedure no mysql
 
 		//Início: Método Update, para atualizar os registros de um possível usuário
-		
 		public function update($login, $password){
 
 			$this->setDesLogin($login);
@@ -149,8 +148,23 @@
 			));
 
 		}
-
 		//Termino: Método Update, para atualizar os registros de um possível usuário
+
+		//Início: Método Delete, o qual irá deletar esse objeto da Base de Dados(BD)
+		public function delete(){
+			
+			$sql = new Sql();
+
+			$sql->query("DELETE FROM tb_usuarios WHERE idusuario = :ID", array(
+				":ID"=>$this->getIdUsuario()
+			));
+
+			$this->setIdUsuario(0);
+			$this->setDesLogin("");
+			$this->setDesSenha("");
+			$this->setDtCadastro(new DateTime());
+		}
+		//Termino: Método Delete, o qual irá deletar esse objeto da Base de Dados(BD)
 
 		//Início: Método mágico '__toString'
 		public function __toString(){
